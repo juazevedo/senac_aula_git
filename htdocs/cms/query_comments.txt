@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS `cms`.`comentarios` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `data_publicacao` DATETIME NOT NULL,
+  `ip` VARCHAR(20) NOT NULL,
+  `texto` VARCHAR(255) NOT NULL,,
+  `ativo` BIT NOT NULL DEFAULT 1,
+  `usuario_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`usuario_id`)
+    REFERENCES `cms`.`usuario` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);

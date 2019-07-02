@@ -1,0 +1,150 @@
+CREATE DATABASE IF NOT EXISTS restaurante;
+USE restaurante;
+
+
+CREATE TABLE IF NOT EXISTS pagamento (
+	id TINYINT NOT NULL AUTO_INCREMENT,
+	nome VARCHAR(10) NOT NULL,
+	PRIMARY KEY(id)
+	);
+	
+CREATE TABLE IF NOT EXISTS produto (
+	id INT NOT NULL AUTO_INCREMENT, 
+	nome VARCHAR(20) NOT NULL,
+	preco DECIMAL(7,2) NOT NULL,
+	PRIMARY KEY(id)
+	);	
+	
+CREATE TABLE IF NOT EXISTS conta (
+	id INT NOT NULL AUTO_INCREMENT,
+	control INT NOT NULL,
+	data DATETIME NOT NULL,
+	mesa TINYINT NOT NULL,
+	pag_id TINYINT NOT NULL,
+	desconto DECIMAL(7,2),
+	total DECIMAL(7,2),
+	PRIMARY KEY(id),
+	FOREIGN KEY(pag_id) 
+    	REFERENCES pagamento(id)
+    		ON DELETE RESTRICT 
+    		ON UPDATE RESTRICT
+	);
+    
+CREATE TABLE IF NOT EXISTS itens (
+	id_conta INT NOT NULL,
+	id_produto INT NOT NULL,
+	PRIMARY KEY(id_conta, id_produto),
+	FOREIGN KEY(id_conta) 
+    	REFERENCES conta(id)
+    		ON DELETE CASCADE 
+    		ON UPDATE CASCADE,
+	FOREIGN KEY(id_produto) 
+    	REFERENCES produto(id)
+    		ON DELETE RESTRICT 
+    		ON UPDATE RESTRICT	
+	);
+	
+USE restaurante;
+	
+INSERT INTO pagamento (id, nome) VALUES (NULL, 'Dinheiro');
+INSERT INTO pagamento (nome) VALUES ('Cartão de debito');
+INSERT INTO pagamento VALUES (NULL, 'Cartão de crédito');
+
+UPDATE pagamento SET nome = 'Cheque' WHERE id = 2;
+
+DELETE FROM pagamento WHERE id = 3;
+
+START TRANSACTION; -- Inicia a transação
+
+COMMIT; -- Confirma
+
+ROLLBACK; -- Volta
+
+MYSQLDUMP-U[usuario]-P[password]
+-H[servidor] [banco] -- Query para backup (pesquisar)
+
+
+START TRANSACTION;
+
+USE restaurante;
+
+INSERT INTO produto (id, nome, preco) VALUES (NULL, 'Salada', '45.00');
+INSERT INTO produto (id, nome, preco) VALUES (NULL, 'Filé', '80.00');
+
+INSERT INTO conta (id, control, data, desconto, mesa, pag_id, total) VALUES (NULL, 0001, '2019-05-14 21:34:00', '12.50', 10, 1, '112.50');
+INSERT INTO conta (id, control, data, desconto, mesa, pag_id, total) VALUES (NULL, 0002, '2019-05-16 23:13:00', '10.50', 08, 2, '114.50');
+
+INSERT INTO itens (id_conta, id_produto) VALUES (NULL, 2, 1);
+INSERT INTO itens (id_conta, id_produto) VALUES (NULL, 3, 2);
+
+UPDATE produto SET nome = 'Pizza' WHERE id = 2;
+DELETE FROM produto WHERE id = 3;
+
+UPDATE conta SET mesa = 07 WHERE id = 3;
+DELETE FROM conta WHERE id = 4;
+
+UPDATE itens SET id_conta = 3 WHERE id = 2;
+DELETE FROM itens WHERE id = 2;
+
+------
+USE restaurante;
+
+SELECT * FROM conta;
+
+SELECT id, control, data, mesa, desconto, total AS subtotal, (total - desconto) AS total_desconto
+FROM conta
+WHERE total > 200 AND total < 500
+ORDER BY data DESC, control ASC;
+
+SELECT id, control, data, mesa, desconto, total AS subtotal, (total - desconto) AS total_desconto
+FROM conta
+WHERE total > 200 AND total < 500
+ORDER BY total DESC
+LIMIT 1
+
+SELECT DISTINCT total FROM conta;
+
+SELECT SUM(desconto) AS total_desconto, 
+AVG(desconto) AS media_desconto, 
+COUNT(*) qtd_desconto 
+FROM conta;
+
+SELECT data, SUM(desconto) AS total_desconto
+FROM conta 
+GROUP BY data
+ORDER BY data ASC;
+
+SELECT data, SUM(desconto) AS total_desconto
+FROM conta 
+GROUP BY data
+HAVING SUM(desconto) > 50
+ORDER BY data ASC;
+
+SELECT c.id, c.data, c.mesa, c.desconto, c.total, p.nome
+FROM conta c 
+INNER JOIN pagamento p ON p.id = c.pag_id
+
+SELECT p.id, p.nome, c.mesa, c.id, c.data
+FROM pagamento p 
+LEFT JOIN conta c ON p.id = c.pag_id
+
+SELECT p.id, p.nome, SUM(c.total) AS total
+FROM pagamento p 
+LEFT JOIN conta c ON p.id = c.pag_id
+GROUP BY p.id, p.nome
+ORDER BY 3 DESC 
+
+SELECT c.data, c.desconto, c.total, (SELECT p.nome FROM pagamento p WHERE p.id = c.pag_id)
+FROM conta c
+
+SELECT * 
+FROM conta
+WHERE data BETWEEN '2019-03-01 00:00:00' AND '2019-03-31 23:59:59'
+
+SELECT * 
+FROM conta
+WHERE mesa IN (1,2)
+
+SELECT * 
+FROM pagamento
+WHERE nome LIKE '%cred%'

@@ -1,0 +1,183 @@
+CREATE DATABASE IF NOT EXISTS site; -- criação de banco de dados. (if not exists opcional)
+
+DROP DATABASE IF EXISTS site; -- excluir BD
+
+SHOW DATABASES; -- Mostra os bancos de dados que existem
+
+USE site; -- Seleciona o banco de dados que vai usar
+
+CREATE TABLE IF NOT EXISTS pessoa (
+	cpf CHAR(11) NOT NULL,
+	nome VARCHAR(60) NOT NULL,
+    idade TINYINT NOT NULL,
+    peso DECIMAL(5,2) NOT NULL,
+	PRIMARY KEY(cpf)
+	);
+	
+CREATE TABLE IF NOT EXISTS aluno (
+	matricula INT NOT NULL,
+	seq INT NOT NULL,
+	nome VARCHAR(60) NOT NULL,
+	PRIMARY KEY(matricula, seq)
+	);
+	
+CREATE TABLE IF NOT EXISTS dependente (
+    id INT NOT NULL AUTO_INCREMENT,
+	nome VARCHAR(60) NOT NULL,
+    pessoa_cpf CHAR(11) NOT NULL,
+	PRIMARY KEY(id),
+    FOREIGN KEY (pessoa_cpf) REFERENCES pessoa (cpf)
+    	ON DELETE CASCADE ON UPDATE CASCADE
+	);
+	
+SHOW TABLES;
+
+ALTER TABLE pessoa ADD altura DECIMAL(4,2) NULL;
+
+ALTER TABLE pessoa DROP altura;
+
+ALTER TABLE pessoa MODIFY COLUMN idade INT NOT NULL;
+
+DROP TABLE IF EXISTS pessoa;
+
+USE site;
+
+CREATE TABLE IF NOT EXISTS estado (
+	sigla CHAR(2) NOT NULL,
+	nome VARCHAR(60) NOT NULL,
+	PRIMARY KEY(sigla)
+	);
+   
+CREATE TABLE IF NOT EXISTS cidade (
+    id INT NOT NULL AUTO_INCREMENT,
+	nome VARCHAR(60) NOT NULL,
+    estado_sigla CHAR(2) NOT NULL,
+	PRIMARY KEY(id),
+    FOREIGN KEY (estado_sigla) 
+    	REFERENCES estado (sigla)
+    		ON DELETE CASCADE 
+    		ON UPDATE CASCADE
+	);
+    
+CREATE TABLE IF NOT EXISTS bairro (
+    id INT NOT NULL AUTO_INCREMENT,
+	nome VARCHAR(60) NOT NULL,
+    cidade_id INT NOT NULL,
+	PRIMARY KEY(id),
+    FOREIGN KEY(cidade_id) 
+    	REFERENCES cidade (id)
+    		ON DELETE CASCADE 
+    		ON UPDATE CASCADE
+	);
+    
+CREATE TABLE IF NOT EXISTS endereco (
+    cep CHAR(8) NOT NULL,
+	logradouro VARCHAR(60) NOT NULL,
+    bairro_id INT NOT NULL,
+	PRIMARY KEY(cep),
+    FOREIGN KEY(bairro_id) 
+    	REFERENCES bairro (id)
+    		ON DELETE CASCADE 
+    		ON UPDATE CASCADE
+	);
+	
+USE site;
+
+
+CREATE TABLE IF NOT EXISTS pagamento (
+	id TINYINT NOT NULL,
+	nome VARCHAR(10) NOT NULL,
+	PRIMARY KEY(id)
+	);
+	
+CREATE TABLE IF NOT EXISTS produto (
+	id INT NOT NULL AUTO_INCREMENT, 
+	nome VARCHAR(20) NOT NULL,
+	preco DECIMAL(7,2) NOT NULL,
+	PRIMARY KEY(id)
+	);	
+	
+CREATE TABLE IF NOT EXISTS itens (
+	id_conta INT NOT NULL,
+	id_produto INT NOT NULL,
+	PRIMARY KEY(id_conta, id_produto),
+	FOREIGN KEY(id_conta) 
+    	REFERENCES conta (id)
+    		ON DELETE CASCADE 
+    		ON UPDATE CASCADE,
+	FOREIGN KEY(id_produto) 
+    	REFERENCES produto (id)
+    		ON DELETE CASCADE 
+    		ON UPDATE CASCADE	
+	);
+	
+CREATE TABLE IF NOT EXISTS conta (
+	id INT NOT NULL,
+	control VARCHAR(10) NOT NULL AUTO_INCREMENT,
+	data DATETIME NOT NULL,
+	mesa TINYINT NOT NULL,
+	pag_id TINYINT NOT NULL,
+	desconto DECIMAL(7,2),
+	total DECIMAL(7,2),
+	PRIMARY KEY(id),
+	FOREIGN KEY(pag_id) 
+    	REFERENCES pagamento (id)
+    		ON DELETE CASCADE 
+    		ON UPDATE CASCADE,
+	FOREIGN KEY(produto_nome) 
+    	REFERENCES produto (nome)
+    		ON DELETE CASCADE 
+    		ON UPDATE CASCADE
+	);
+	
+
+
+---
+
+CREATE DATABASE IF NOT EXISTS site; -- criação de banco de dados
+
+DROP DATABASE IF EXISTS site; -- excluir BD
+
+SHOW DATABASES;
+
+USE site;
+
+USE site;
+CREATE TABLE IF NOT EXISTS pessoa ( 
+    	cpf CHAR(11) NOT NULL,
+    	nome VARCHAR(60) NOT NULL,
+    	idade TINYINT NOT NULL,
+    	peso DECIMAL(5,2) NOT NULL);
+		
+SHOW TABLES;
+
+ALTER TABLE pessoa ADD altura DECIMAL(4,2) NULL;
+
+ALTER TABLE pessoa DROP altura;
+
+ALTER TABLE pessoa MODIFY COLUMN idade INT NOT NULL; 
+
+DROP TABLE IF EXISTS pessoa;
+
+DESC pessoa;
+
+USE site;
+
+CREATE TABLE IF NOT EXISTS pessoa ( 
+    	cpf CHAR(11) NOT NULL,
+    	nome VARCHAR(60) NOT NULL,
+    	idade TINYINT NOT NULL,
+    	peso DECIMAL(5,2) NOT NULL,
+    	PRIMARY KEY(cpf)
+		);
+
+CREATE TABLE IF NOT EXISTS dependente ( 
+    	id INT NOT NULL AUTO_INCREMENT,
+    	nome VARCHAR(60) NOT NULL,
+    	pessoa_cpf CHAR(11) NOT NULL,
+    	PRIMARY KEY(id),
+    	FOREIGN KEY (pessoa_cpf) REFERENCES pessoa(cpf) 
+    		ON DELETE CASCADE ON UPDATE CASCADE
+		);
+        
+        
